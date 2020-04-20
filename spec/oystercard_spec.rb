@@ -25,4 +25,17 @@ describe Oystercard do
     expect(subject.balance).to eq 45
   end
 
+  it "checks that it can be touched in" do
+    expect(subject).to respond_to(:touch_in)
+  end
+
+  it "checks if a card can show if it's in_journey?" do
+    expect(subject).to respond_to(:in_journey)
+  end
+
+  it "checks if in_journey is true if card is touched in" do
+    subject.touch_in
+    expect(subject.in_journey).to eq true
+  end
+
 end
