@@ -38,4 +38,10 @@ describe Oystercard do
     expect(subject.in_journey).to eq true
   end
 
+  it "checks if in_journey is false if card is touched out" do
+    subject.touch_in
+    subject.touch_out
+    expect(subject.in_journey).to be_falsey
+  end
+
 end
