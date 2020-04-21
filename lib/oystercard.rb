@@ -6,7 +6,8 @@ class Oystercard
   def initialize(balance = 0)
     @balance = balance
     @entry_station = nil
-    @journeys = { "entry_station" => [], "exit_station" => [] }
+    @journeys = []
+    @journey = Hash.new
   end
 
   def top_up(amount)
@@ -16,14 +17,16 @@ class Oystercard
   def touch_in(station)
     raise "Does not have the minimum amount" if @balance < MINIMUM_BALANCE
     @entry_station = station
-    @journeys["entry_station"] << station
+    @journey["entry_station"] = station
   end
 
   def touch_out(station)
     if in_journey?
       deduct(MINIMUM_BALANCE)
       @entry_station = nil
-      @journeys["exit_station"] << station
+      @journey["exit_station"] = station
+      @journeys << @journey
+      @journey = Hash.new
     end
   end
 
