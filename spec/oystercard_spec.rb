@@ -3,6 +3,7 @@ require './lib/oystercard'
 describe Oystercard do
   limit = Oystercard::LIMIT
 
+
   it "has a balance" do
     expect(subject).to respond_to(:balance)
   end
@@ -19,8 +20,9 @@ describe Oystercard do
     end
 
     it "returns error when touching in if balance is less than minimum amount" do
+      station = double("Station", :name => "Camden")
       subject.top_up(0.5)
-      expect { subject.touch_in }.to raise_error("Does not have the minimum amount")
+      expect { subject.touch_in(station) }.to raise_error("Does not have the minimum amount")
     end
   end
 
@@ -31,7 +33,7 @@ describe Oystercard do
   end
 
   it "checks that it can be touched in" do
-    expect(subject).to respond_to(:touch_in)
+    expect(subject).to respond_to(:touch_in).with(1).argument
   end
 
   it "checks if a card can show if it's in_journey?" do
@@ -39,23 +41,33 @@ describe Oystercard do
   end
 
   it "checks if in_journey is true if card is touched in" do
+  station = double("Station", :name => "Camden")
     subject.top_up(2)
-    subject.touch_in
+    subject.touch_in(station)
     expect(subject.in_journey).to eq true
   end
 
   it "checks if in_journey is false if card is touched out" do
+      station = double("Station", :name => "Camden")
     subject.top_up(2)
-    subject.touch_in
+    subject.touch_in(station)
     subject.touch_out
     expect(subject.in_journey).to be_falsey
   end
 
   describe "#touch_out" do
     it "deducts correct amount for journey" do
+        station = double("Station", :name => "Camden")
       subject.top_up(10)
-      subject.touch_in
+      subject.touch_in(station)
       expect { subject.touch_out }.to change{subject.balance}.by(-1)
     end
+  end
+
+  it "remebers station when touched in" do
+    subject.top_up(10)
+    station = double("Station", :name => "Camden")
+    subject.touch_in(station)
+    expect(subject.entry_station.name).to eq("Camden")
   end
 end
