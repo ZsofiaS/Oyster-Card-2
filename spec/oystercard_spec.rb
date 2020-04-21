@@ -70,4 +70,11 @@ describe Oystercard do
     subject.touch_in(station)
     expect(subject.entry_station.name).to eq("Camden")
   end
+
+  it "forgets station when touched out" do
+    subject.top_up(10)
+    station = double("Station", :name => "Camden")
+    subject.touch_in(station)
+    expect { subject.touch_out }.to change{subject.entry_station}.to(nil)
+  end
 end
