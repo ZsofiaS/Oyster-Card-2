@@ -28,31 +28,14 @@ describe Oystercard do
 
   it "deducts specified amount of money from the card" do
     subject.top_up(50)
+    station = double("Station", :name => "Camden")
+    subject.touch_in(station)
     subject.touch_out
     expect(subject.balance).to eq 49
   end
 
   it "checks that it can be touched in" do
     expect(subject).to respond_to(:touch_in).with(1).argument
-  end
-
-  it "checks if a card can show if it's in_journey?" do
-    expect(subject).to respond_to(:in_journey)
-  end
-
-  it "checks if in_journey is true if card is touched in" do
-  station = double("Station", :name => "Camden")
-    subject.top_up(2)
-    subject.touch_in(station)
-    expect(subject.in_journey).to eq true
-  end
-
-  it "checks if in_journey is false if card is touched out" do
-      station = double("Station", :name => "Camden")
-    subject.top_up(2)
-    subject.touch_in(station)
-    subject.touch_out
-    expect(subject.in_journey).to be_falsey
   end
 
   describe "#touch_out" do
