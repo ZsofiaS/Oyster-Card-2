@@ -26,8 +26,8 @@ describe Oystercard do
 
   it "deducts specified amount of money from the card" do
     subject.top_up(50)
-    subject.deduct(5)
-    expect(subject.balance).to eq 45
+    subject.touch_out
+    expect(subject.balance).to eq 49
   end
 
   it "checks that it can be touched in" do
@@ -51,4 +51,11 @@ describe Oystercard do
     expect(subject.in_journey).to be_falsey
   end
 
+  describe "#touch_out" do
+    it "deducts correct amount for journey" do
+      subject.top_up(10)
+      subject.touch_in
+      expect { subject.touch_out }.to change{subject.balance}.by(-1)
+    end
+  end
 end
