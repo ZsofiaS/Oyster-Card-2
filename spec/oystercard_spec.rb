@@ -3,17 +3,32 @@ require './lib/oystercard'
 describe Oystercard do
   limit = Oystercard::LIMIT
 
-
   it "has a balance" do
     expect(subject).to respond_to(:balance)
   end
 
   it "can store journeys" do
     station = double("Station", :name => "Camden")
+    exit_station = double("Station", :name => "Angel")
     subject.top_up(10)
     subject.touch_in(station)
-    subject.touch_out
+    subject.touch_out(exit_station)
     expect(subject.journeys["entry_station"].count).to eq 1
+  end
+
+  it "has no journeys stored" do
+    expect(subject.journeys["entry_station"].count).to eq 0
+    expect(subject.journeys["exit_station"].count).to eq 0
+  end
+
+  it "stores a journey when touched in and touched out" do
+    station = double("Station", :name => "Camden")
+    exit_station = double("Station", :name => "Angel")
+    subject.top_up(10)
+    subject.touch_in(station)
+    subject.touch_out(exit_station)
+    expect(subject.journeys["entry_station"][0].name).to eq "Camden"
+    expect(subject.journeys["exit_station"][0].name).to eq "Angel"
   end
 
   describe "top_up method" do
@@ -37,8 +52,9 @@ describe Oystercard do
   it "deducts specified amount of money from the card" do
     subject.top_up(50)
     station = double("Station", :name => "Camden")
+    exit_station = double("Station", :name => "Angel")
     subject.touch_in(station)
-    subject.touch_out
+    subject.touch_out(exit_station)
     expect(subject.balance).to eq 49
   end
 
@@ -49,9 +65,10 @@ describe Oystercard do
   describe "#touch_out" do
     it "deducts correct amount for journey" do
         station = double("Station", :name => "Camden")
+        exit_station = double("Station", :name => "Angel")
       subject.top_up(10)
       subject.touch_in(station)
-      expect { subject.touch_out }.to change{subject.balance}.by(-1)
+      expect { subject.touch_out(exit_station) }.to change{subject.balance}.by(-1)
     end
   end
 
@@ -65,7 +82,8 @@ describe Oystercard do
   it "forgets station when touched out" do
     subject.top_up(10)
     station = double("Station", :name => "Camden")
+    exit_station = double("Station", :name => "Angel")
     subject.touch_in(station)
-    expect { subject.touch_out }.to change{subject.entry_station}.to(nil)
+    expect { subject.touch_out(exit_station) }.to change{subject.entry_station}.to(nil)
   end
 end
