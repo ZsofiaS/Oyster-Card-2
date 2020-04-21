@@ -8,6 +8,14 @@ describe Oystercard do
     expect(subject).to respond_to(:balance)
   end
 
+  it "can store journeys" do
+    station = double("Station", :name => "Camden")
+    subject.top_up(10)
+    subject.touch_in(station)
+    subject.touch_out
+    expect(subject.journeys["entry_station"].count).to eq 1
+  end
+
   describe "top_up method" do
     it "tops up the card with a specified balance" do
       subject.top_up(10)
